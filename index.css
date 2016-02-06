@@ -44,14 +44,13 @@ button.btn {
   flex-grow: 1;
 }
 
-
 .reveal .slides .fancy-fragments {
   height: 600px;
 }
 
 .reveal .slides .fancy-fragments .fragment {
-  transition: all 0.4s cubic-bezier(.17,.67,.58,1);
-  -webkit-transition: all 0.4s cubic-bezier(.17,.67,.58,1);
+  transition: all 0.4s cubic-bezier(.17, .67, .58, 1);
+  -webkit-transition: all 0.4s cubic-bezier(.17, .67, .58, 1);
 
   max-height: 95%;
   opacity: 0;
@@ -150,4 +149,14 @@ pre.overlay-inner {
 
 .hoist {
   top: -40% !important;
+}
+
+.pixel-image {
+  background-repeat: no-repeat;
+  background-position: center center;
+  margin: 0 auto !important;
+  background-size: contain;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
 }
