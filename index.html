@@ -140,6 +140,8 @@
           <h3>Every line of JS you've ever written has (momentarily) stopped your page from working.</h3>
           <aside class="notes">
             That's kind of a mind-blowing thought, right? It means that every line of JavaScript you've ever written has (momentarily) stopped your page from working. (Frontend JavaScript, anyway.)
+
+            We should feel humbled by this fact. We have this great responsibility with the JavaScript we use.
           </aside>
         </section>
 
@@ -176,20 +178,43 @@
 
         <section>
           <h3>1000ms / 60 frames = 16.7ms</h3>
+          <aside class="notes">
+            If you do the math, and divide 1000 milliseconds by 60 frames, you get 16.7 milliseconds.
+            What that means is that, any JavaScript you do has to complete in under 16.7 milliseconds if
+            you want to stay at 60 FPS.
+          </aside>
         </section>
 
         <section>
           <h3>Factor in browser overhead...</h3>
           <img class="no-border"  src="img/paul_lewis.png" alt="Paul Lewis, 10ms"/>
+          <aside class="notes">
+            If you factor in browser overhead, according to Paul Lewis on the Chrome team, this is actually
+            even smaller. 10ms for all your JavaScript to execute! That's tiny! that's punishingly small!
+          </aside>
         </section>
 
         <section>
           <img src="img/jeff_atwood.png" alt="Jeff Atwood, state of JS performance is poor"/>
+          <aside class="notes">
+            And if you think it's bad on desktop, try mobile, where we have slower CPUs. It led Jeff Atwood
+            to write this post about how Android phones just aren't fast enough to run Discourse, which is
+            an Ember app. Newer iPhones are barely fast enough, but Android phones just aren't there.
+
+            This is the kind of stuff that leads people to say, "Well, I guess the web's not ready for rich,
+            immersive 60fps mobile apps. We'll have to write an iOS or Android app instead!" But I take exception
+            with that, because I _am_ an Android developer, and I know the tricks that native developers use to
+            milk performance out of a weak CPU.
+          </aside>
         </section>
 
         <section>
           <h3>UI thread (main thread)</h3>
           <img class="no-border pixel-image" height="400" style="transform: translateY(20px)" src="img/kirby_paint.gif"/>
+          <aside class="notes">
+            See, the way that UIs work, on both the web, Android, and iOS, is that you have one thread, called the main
+            thread, whose responsibility is to respond to UI events like clicks and scrolling, and to paint.
+          </aside>
         </section>
 
         <section>
@@ -204,6 +229,12 @@
               <img class="no-border pixel-image"  style="transform: translate(0, 5px);"height="200" src="img/kirby_run.gif"/>
             </div>
           </div>
+          <aside class="notes">
+            When we want to do something that's unrelated to UI - business logic, reading from local storage, talking to the
+            network, we shove that off in a background thread.
+
+            This is like Android development 101. "My app is slow!" "Well, did you use an Async Task?" "Whoops, I forgot."
+          </aside>
         </section>
 
         <section>
@@ -218,6 +249,11 @@
               <img class="no-border pixel-image" style="transform: translate(0, 65px);"height="200" src="img/kirby_sleep.gif"/>
             </div>
           </div>
+          <aside class="notes">
+            Whereas on the web, I think most of our apps look like this. And if you think I'm being unfair because Ajax and IndexedDB
+            are asynchronous, I can show you that those two APIs actually *can* block the DOM, if you use them too much.
+            Asynchronous helps, but "asynchronous" does not mean "free."
+          </aside>
         </section>
 
         <section>
@@ -234,6 +270,9 @@
                    src="img/kirby_star.gif"/>
             </div>
           </div>
+          <aside class="notes">
+            So what are we supposed to do? Well, it turns out the web has a solution to this, and it's called web workers!
+          </aside>
         </section>
 
         <section>
@@ -257,12 +296,20 @@ self.onmessage = function (e) {
 };</code></pre>
           </div>
           </div>
+          <aside class="notes">
+            I'm not going to go too deep into this code, but a web worker is basically a background thread that you can spawn
+            whenever you want to do a bit of JavaScript work. Anything that runs inside the worker runs on another thread (another
+            process in fact), so it cannot possibly block the DOM.
+          </aside>
         </section>
 
         <!-- TLDR
 
         <section>
           <img src="img/caniuse_webworkers.png" alt="caniuse.com page for web workers"/>
+          <aside class="notes">
+            Web worker support is very good.
+          </aside>
         </section>
         -->
 
@@ -275,10 +322,24 @@ self.onmessage = function (e) {
             <li class="fragment">...but not DOM</li>
             <li class="fragment">Virtual DOM!</li>
           </ul>
+          <aside class="notes">
+            So what can you do inside of a web worker? Well, you have ajax and IndexedDB, and like I said,
+            those actually *can* block the DOM, so it's worthwhile to put them in a web worker. You can also
+            do any normal JS operations, except for the DOM. But hey, you can do Virtual DOM, right?
+          </aside>
         </section>
 
         <section>
           <img src="img/pokedex_architecture.png" alt="pokedex.org virtual dom architecture"/>
+          <aside class="notes">
+            So I experimented with this, and I demonstrated that it's possible. I wrote an app
+            with an architecture where every UI event basically gets fired off as an action to the web worker.
+            Inside the web worker, it generates the Virtual DOM tree, diffs it with the previous tree, and then
+            sends the patch (i.e. the minimal set of operations to be applied to the DOM) back to the main thread.
+
+            This is great that the patch tends to be small, because the *only* cost you pay with a web worker on the main
+            thread is the cost of serializing and de-serializing the messages sent back and forth with the worker.
+          </aside>
         </section>
 
         <section>
@@ -286,6 +347,11 @@ self.onmessage = function (e) {
           <div style="transform: translateY(-50px)">
             <video height=680 src="vid/pokedex.webm" loop data-autoplay></video>
           </div>
+          <aside class="notes">
+            This works surprisingly well. Here's my Pokedex.org app running on a 2011-era Galaxy Nexus phone.
+            It runs at 60fps, and is nearly indistinguishable from a native app. On newer Android phones, it
+            *is* indistinguishable from a native app.
+          </aside>
         </section>
 
         <section>
@@ -293,6 +359,11 @@ self.onmessage = function (e) {
           <div style="transform: translateY(-50px)">
             <video height=680 src="vid/react_worker.webm" loop data-autoplay></video>
           </div>
+          <aside class="notes">
+            And if you still don't believe me, there was a blog post recently where Parashuram demonstrates that you can run
+            React's virtual DOM inside of a web worker, and he actually demonstrated that this resulted in a better framerate than
+            when you don't use a worker.
+          </aside>
         </section>
 
         <section>
@@ -307,8 +378,15 @@ self.onmessage = function (e) {
             <li><a href="http://www.pocketjavascript.com/blog/2015/11/23/introducing-pokedex-org">Introducing Pokedex.org</a></li>
             <li><a href="http://blog.nparashuram.com/2015/12/react-web-worker-renderer.html">React Custom Renderer using Web Workers</a></li>
           </ul>
-        </section>
+          <aside class="notes">
+            This think this stuff is going to start popping up in frameworks. It's already going to appear in Angular 2, which is
+            where I got the idea. But you can use web workers yourself today. The APIs are very easy to work with, and there are
+            polyfills.
 
+            So if you have any JavaScript on your frontend that can run in a worker, please consider throwing it in a worker! Your
+            framerate will improve, and your users will thank you. Thanks!
+          </aside>
+        </section>
       </div>
 		</div>
 
