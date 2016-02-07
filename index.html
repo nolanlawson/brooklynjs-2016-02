@@ -47,6 +47,7 @@
           <h4>I like the way you work it</h4>
           <div class="pixel-image" style="width:300px;height:200px;background-image: url(img/worker_kirby.png);"></div>
 
+            <h4>@nolanlawson</h4>
           <div class="footer">
             <div class="text-muted">Speaker notes are in the dev console!</div>
           </div>
@@ -54,6 +55,8 @@
             Hi everybody.
           </aside>
         </section>
+
+        <!-- TLDR
 
         <section>
           <h4>@nolanlawson</h4>
@@ -65,11 +68,20 @@
         </section>
 
         <section>
-          <h4>I work on</h4>
           <img class="no-border" style="display:inline-block" height="150" src="img/squarespace.jpg" alt="squarespace"/>
           <img class="no-border" style="display:inline-block" height="150" src="img/pouchdb.png" alt="pouchdb"/>
           <aside class="notes">
             I also work at Squarespace, and I help maintain PouchDB.
+          </aside>
+        </section>
+
+-->
+
+        <section>
+          <img class="no-border" style="display:inline-block" height="150" src="img/squarespace.jpg" alt="squarespace"/>
+          <img class="no-border" style="display:inline-block" height="150" src="img/pouchdb.png" alt="pouchdb"/>
+          <aside class="notes">
+            I'm Nolan Lawson. I work at Squarespace, and I help maintain PouchDB.
           </aside>
         </section>
 
@@ -209,11 +221,91 @@
         </section>
 
         <section>
-          <img class="no-border pixel-image" style="display:block" width="100" src="img/kirby_expedition.gif"/>
-          <h4>http://nolanlawson.github.io/brooklynjs-2016-02/</h4>
+          <div style="display:flex;flex-direction:row;">
+            <div style="min-width:150px;display:flex;justify-content:center;flex-direction:column;">
+              <img class="no-border pixel-image"
+                   style="min-width:150px;flex-grow:0;"
+                   src="img/kirby_star.gif"/>
+            </div>
+            <h2 style="flex-shrink: 1;max-width: 500px;" class="random-color">WEB WORKERS!</h2>
+            <div style="min-width:150px;display:flex;justify-content:center;flex-direction:column;">
+              <img class="no-border pixel-image"
+                   style="min-width:150px;flex-grow:0;"
+                   src="img/kirby_star.gif"/>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div style="display:flex;flex-direction:row;">
+          <div style="flex-grow: 1; flex-shrink: 1">
+          <pre><code class="javascript">// index.js
+
+var worker = new Worker('worker.js');
+worker.postMessage('ping');
+worker.onmessage = function (e) {
+  console.log(e.data); // 'pong'
+};</code></pre>
+          </div>
+
+          <div style="flex-grow: 1; flex-shrink: 1;">
+          <pre><code class="javascript">// worker.js
+
+self.onmessage = function (e) {
+  console.log(e.data); // 'ping'
+  self.postMessage('pong');
+};</code></pre>
+          </div>
+          </div>
+        </section>
+
+        <!-- TLDR
+
+        <section>
+          <img src="img/caniuse_webworkers.png" alt="caniuse.com page for web workers"/>
+        </section>
+        -->
+
+        <section>
+         <h3>Web Workers can do...</h3>
           <ul>
+            <li class="fragment">Ajax</li>
+            <li class="fragment">IndexedDB</li>
+            <li class="fragment">Anything JS can do</li>
+            <li class="fragment">...but not DOM</li>
+            <li class="fragment">Virtual DOM!</li>
+          </ul>
+        </section>
+
+        <section>
+          <img src="img/pokedex_architecture.png" alt="pokedex.org virtual dom architecture"/>
+        </section>
+
+        <section>
+          <h3>Pokedex.org on a 2011 Galaxy Nexus</h3>
+          <div style="transform: translateY(-50px)">
+            <video height=680 src="vid/pokedex.webm" loop data-autoplay></video>
+          </div>
+        </section>
+
+        <section>
+          <h3>React with Web Workers</h3>
+          <div style="transform: translateY(-50px)">
+            <video height=680 src="vid/react_worker.webm" loop data-autoplay></video>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="random-color">Thank you!</h2>
+          <img class="no-border pixel-image" style="display:block" width="100" src="img/kirby_expedition.gif"/>
+          <h4 style="margin-top: 10px !important">nolanlawson.github.io/brooklynjs-2016-02</h4>
+          <ul style="font-size: 18px !important;line-height:20px !important;">
             <li><a href="demo1.html">First demo</a></li>
             <li><a href="demo2.html">Second demo</a></li>
+            <li><a href="https://vimeo.com/125121010">Paul Lewis on Making a Silky Smooth Web</a></li>
+            <li><a href="https://meta.discourse.org/t/the-state-of-javascript-on-android-in-2015-is-poor/33889">The State of JavaScript on Android in 2015 is… poor</a> </li>
+            <li><a href="http://www.pocketjavascript.com/blog/2015/11/23/introducing-pokedex-org">Introducing Pokedex.org</a></li>
+            <li><a href="http://blog.nparashuram.com/2015/12/react-web-worker-renderer.html">React Custom Renderer using Web Workers</a></li>
           </ul>
         </section>
 
@@ -227,7 +319,35 @@
 		<script src="js/highcharts-exporting.js"></script>
     <script src="js/ua.js"></script>
 
+    <script src="js/randomColor.js"></script>
+
 		<script>
+
+      var randomizedTextTimeout;
+
+      function randomizeText(slide) {
+        var rando = slide.querySelector('.random-color');
+        if (rando) {
+          randomizedTextTimeout = setInterval(function () {
+            requestAnimationFrame(function () {
+              if (!rando.dataset.colorized) {
+                var text = rando.innerText;
+                var newText = '';
+                for (var i = 0; i < text.length; i++) {
+                  newText += '<span style="color:' + randomColor() + '">' + text.charAt(i) + '</span>';
+                }
+                rando.innerHTML = newText;
+                rando.dataset.colorized = true;
+              } else {
+                var spans = rando.querySelectorAll('span');
+                for (var i = 0; i < spans.length; i++) {
+                  spans[i].style.color = randomColor();
+                }
+              }
+            });
+          }, 100);
+        }
+      }
 
 			// Full list of configuration options available here:
 			// https://github.com/hakimel/reveal.js#configuration
@@ -257,6 +377,9 @@
         if(notes) {
           console.info(notes.innerHTML.replace(/\n\s+/g,'\n'));
         }
+
+        clearInterval(randomizedTextTimeout);
+        randomizeText(event.currentSlide);
       } );
 
       Reveal.addEventListener('fragmentshown', function (e) {
@@ -279,11 +402,14 @@
         console.info(notes.innerHTML.replace(/\n\s+/g, '\n'));
       }
 
+      randomizeText(document.querySelector('section.present'));
+
       if (!UA.isChrome() && !UA.isFirefox() && !UA.isAndroid() && !UA.isOpera()) {
         window.alert(
           'Heads up! This presentation looks best in ' +
           'Firefox/Chrome due to WEBM video and image-rendering:pixelated. Sorry!');
       }
+
     </script>
 
 	</body>
