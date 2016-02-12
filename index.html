@@ -133,17 +133,21 @@
             Of course, the reason for this is that JavaScript is single-threaded,
             and the browser environment (i.e. the DOM) is single-threaded. So while
             JavaScript is running, the browser can't do anything else.
-          </aside>
-        </section>
 
-        <section>
-          <h3>Every line of JS you've ever written has (momentarily) stopped your page from working.</h3>
-          <aside class="notes">
             That's kind of a mind-blowing thought, right? It means that every line of JavaScript you've ever written has (momentarily) stopped your page from working. (Frontend JavaScript, anyway.)
 
             We should feel humbled by this fact. We have this great responsibility with the JavaScript we use.
           </aside>
         </section>
+
+        <!-- TLDR
+        <section>
+          <h3>Every line of JS you've ever written has (momentarily) stopped your page from working.</h3>
+          <aside class="notes">
+
+          </aside>
+        </section>
+        -->
 
         <section>
           <div>
@@ -182,21 +186,10 @@
             If you do the math, and divide 1000 milliseconds by 60 frames, you get 16.7 milliseconds.
             What that means is that, any JavaScript you do has to complete in under 16.7 milliseconds if
             you want to stay at 60 FPS.
-          </aside>
-        </section>
 
-        <section>
-          <h3>Factor in browser overhead...</h3>
-          <img class="no-border"  src="img/paul_lewis.png" alt="Paul Lewis, 10ms"/>
-          <aside class="notes">
             If you factor in browser overhead, according to Paul Lewis on the Chrome team, this is actually
             even smaller. 10ms for all your JavaScript to execute! That's tiny! that's punishingly small!
-          </aside>
-        </section>
 
-        <section>
-          <img src="img/jeff_atwood.png" alt="Jeff Atwood, state of JS performance is poor"/>
-          <aside class="notes">
             And if you think it's bad on desktop, try mobile, where we have slower CPUs. It led Jeff Atwood
             to write this post about how Android phones just aren't fast enough to run Discourse, which is
             an Ember app. Newer iPhones are barely fast enough, but Android phones just aren't there.
@@ -208,6 +201,43 @@
           </aside>
         </section>
 
+        <!-- TLDR
+        <section>
+          <h3>Factor in browser overhead...</h3>
+          <img class="no-border"  src="img/paul_lewis.png" alt="Paul Lewis, 10ms"/>
+          <aside class="notes">
+
+          </aside>
+        </section>
+        -->
+
+        <!-- TLDR
+        <section>
+          <img src="img/jeff_atwood.png" alt="Jeff Atwood, state of JS performance is poor"/>
+          <aside class="notes">
+          </aside>
+        </section>
+        -->
+
+        <section>
+          <div style="display:flex;flex-direction:row;">
+            <div style="min-width:150px;display:flex;justify-content:center;flex-direction:column;">
+              <img class="no-border pixel-image"
+                   style="min-width:150px;flex-grow:0;"
+                   src="img/kirby_star.gif"/>
+            </div>
+            <h2 style="flex-shrink: 1;max-width: 500px;" class="random-color">WEB WORKERS!</h2>
+            <div style="min-width:150px;display:flex;justify-content:center;flex-direction:column;">
+              <img class="no-border pixel-image"
+                   style="min-width:150px;flex-grow:0;"
+                   src="img/kirby_star.gif"/>
+            </div>
+          </div>
+          <aside class="notes">
+            So what are we supposed to do? Well, it turns out the web has a solution to this, and it's called web workers!
+          </aside>
+        </section>
+
         <section>
           <h3>UI thread (main thread)</h3>
           <img class="no-border pixel-image" height="400" style="transform: translateY(20px)" src="img/kirby_paint.gif"/>
@@ -216,6 +246,34 @@
             thread, whose responsibility is to respond to UI events like clicks and scrolling, and to paint.
           </aside>
         </section>
+
+        <section>
+          <img class="pixel-image no-border" width="600" src="img/kirby_three_dance.gif"/>
+          <aside class="notes">
+
+          </aside>
+        </section>
+
+        <!-- TLDR
+
+        <section>
+          <h3>Four cores</h3>
+          <div class="quad-outer" style="transform: translateY(-30px)">
+            <div  class="quad-inner">
+              <div style="width:200px;height:200px;background: url(img/kirby_busy.gif) no-repeat;background-size: 150%;background-position: -50px 10px;" class="no-border pixel-image"></div>
+              <img class="no-border pixel-image" style="transform: translate(0, 65px);"height="200" src="img/kirby_sleep.gif"/>
+            </div>
+            <div class="quad-inner">
+              <img class="no-border pixel-image" style="transform: translate(0, 65px);"height="200" src="img/kirby_sleep.gif"/>
+              <img class="no-border pixel-image" style="transform: translate(0, 65px);"height="200" src="img/kirby_sleep.gif"/>
+            </div>
+          </div>
+          <aside class="notes">
+            Now, most phones today have four cores, so if we're only using one core, it looks like this.
+          </aside>
+        </section>
+
+        -->
 
         <section>
           <h3>Four cores</h3>
@@ -237,43 +295,6 @@
           </aside>
         </section>
 
-        <section>
-          <h3>Most webapps</h3>
-          <div class="quad-outer" style="transform: translateY(-30px)">
-            <div  class="quad-inner">
-              <div style="width:200px;height:200px;background: url(img/kirby_busy.gif) no-repeat;background-size: 150%;background-position: -50px 10px;" class="no-border pixel-image"></div>
-              <img class="no-border pixel-image" style="transform: translate(0, 65px);"height="200" src="img/kirby_sleep.gif"/>
-            </div>
-            <div class="quad-inner">
-              <img class="no-border pixel-image" style="transform: translate(0, 65px);"height="200" src="img/kirby_sleep.gif"/>
-              <img class="no-border pixel-image" style="transform: translate(0, 65px);"height="200" src="img/kirby_sleep.gif"/>
-            </div>
-          </div>
-          <aside class="notes">
-            Whereas on the web, I think most of our apps look like this. And if you think I'm being unfair because Ajax and IndexedDB
-            are asynchronous, I can show you that those two APIs actually *can* block the DOM, if you use them too much.
-            Asynchronous helps, but "asynchronous" does not mean "free."
-          </aside>
-        </section>
-
-        <section>
-          <div style="display:flex;flex-direction:row;">
-            <div style="min-width:150px;display:flex;justify-content:center;flex-direction:column;">
-              <img class="no-border pixel-image"
-                   style="min-width:150px;flex-grow:0;"
-                   src="img/kirby_star.gif"/>
-            </div>
-            <h2 style="flex-shrink: 1;max-width: 500px;" class="random-color">WEB WORKERS!</h2>
-            <div style="min-width:150px;display:flex;justify-content:center;flex-direction:column;">
-              <img class="no-border pixel-image"
-                   style="min-width:150px;flex-grow:0;"
-                   src="img/kirby_star.gif"/>
-            </div>
-          </div>
-          <aside class="notes">
-            So what are we supposed to do? Well, it turns out the web has a solution to this, and it's called web workers!
-          </aside>
-        </section>
 
         <section>
           <div style="display:flex;flex-direction:row;">
