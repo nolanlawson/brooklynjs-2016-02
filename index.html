@@ -97,7 +97,7 @@
 
         <section>
           <div>
-            <video height=800 style="transform:scale(1.2, 1.2);" src="vid/kirby1.webm" loop data-autoplay></video>
+            <video height=680 src="vid/kirby_1.webm" loop data-autoplay></video>
           </div>
           <aside class="notes">
             This problem is pretty easy to reproduce. All you need to do is
@@ -114,7 +114,7 @@
 
         <section>
           <div>
-            <video height=800 style="transform:scale(1.2, 1.2);" src="vid/kirby2.webm" loop data-autoplay></video>
+            <video height=680 src="vid/kirby_2.webm" loop data-autoplay></video>
           </div>
           <aside class="notes">
             But it doesn't just affect animated GIFs - it affects almost everything
@@ -151,7 +151,7 @@
 
         <section>
           <div>
-            <video height=800 style="transform:scale(1.2, 1.2);" src="vid/kirby3.webm" loop data-autoplay></video>
+            <video height=680 src="vid/kirby_3.webm" loop data-autoplay></video>
           </div>
           <aside class="notes">
             Now, you might not have ever written *such* a long-running JavaScript operation
@@ -265,13 +265,17 @@ self.onmessage = function (e) {
           <aside class="notes">
             See, the way that UIs work, on both the web, Android, and iOS, is that you have one thread, called the main
             thread, whose responsibility is to respond to UI events like clicks and scrolling, and to paint.
+
+            This UI thread is pretty busy. You'd be busy too, if somebody asked you to paint something every 16 milliseconds!
+            Plus, we're sending down our giant 500KB JavaScript app, which we also expect him to run within those 16 milliseconds.
           </aside>
         </section>
 
         <section>
           <img class="pixel-image no-border" width="600" src="img/kirby_three_dance.gif"/>
           <aside class="notes">
-
+            So what'd be nice, is if the UI thread could spawn some friends to help him out. Then those friends
+            could work independently, and he wouldn't be trying to do so much himself.
           </aside>
         </section>
 
@@ -309,10 +313,11 @@ self.onmessage = function (e) {
             </div>
           </div>
           <aside class="notes">
+            This is great, because we can actually spawn as many workers as we want, and even low-end Android phones sold
+            today have 4 cores. So potentially we can do many things at once, in addition to the UI.
+
             When we want to do something that's unrelated to UI - business logic, reading from local storage, talking to the
             network, we shove that off in a background thread.
-
-            This is like Android development 101. "My app is slow!" "Well, did you use an Async Task?" "Whoops, I forgot."
           </aside>
         </section>
 
@@ -344,13 +349,20 @@ self.onmessage = function (e) {
         </section>
 
         <section>
-          <img src="img/pokedex_architecture.png" alt="pokedex.org virtual dom architecture"/>
+          <div>
+            <video height=680 src="vid/pokedex_loop.webm" loop data-autoplay></video>
+          </div>
           <aside class="notes">
             So I experimented with this, and I demonstrated that it's possible. I wrote an app
             with an architecture where every UI event basically gets fired off as an action to the web worker.
             Inside the web worker, it generates the Virtual DOM tree, diffs it with the previous tree, and then
             sends the patch (i.e. the minimal set of operations to be applied to the DOM) back to the main thread.
+            </aside>
+        </section>
 
+        <section>
+          <img src="img/pokedex_architecture.png" alt="pokedex.org virtual dom architecture"/>
+          <aside class="notes">
             This is great that the patch tends to be small, because the *only* cost you pay with a web worker on the main
             thread is the cost of serializing and de-serializing the messages sent back and forth with the worker.
           </aside>
