@@ -97,7 +97,7 @@
 
         <section>
           <div>
-            <video height=680 src="vid/kirby_blocked.webm" loop data-autoplay></video>
+            <video height=800 style="transform:scale(1.2, 1.2);" src="vid/kirby1.webm" loop data-autoplay></video>
           </div>
           <aside class="notes">
             This problem is pretty easy to reproduce. All you need to do is
@@ -114,7 +114,7 @@
 
         <section>
           <div>
-            <video height=680 src="vid/kirby_form.webm" loop data-autoplay></video>
+            <video height=800 style="transform:scale(1.2, 1.2);" src="vid/kirby2.webm" loop data-autoplay></video>
           </div>
           <aside class="notes">
             But it doesn't just affect animated GIFs - it affects almost everything
@@ -151,7 +151,7 @@
 
         <section>
           <div>
-            <video height=680 src="vid/kirby_jank.webm" loop data-autoplay></video>
+            <video height=800 style="transform:scale(1.2, 1.2);" src="vid/kirby3.webm" loop data-autoplay></video>
           </div>
           <aside class="notes">
             Now, you might not have ever written *such* a long-running JavaScript operation
@@ -186,10 +186,21 @@
             If you do the math, and divide 1000 milliseconds by 60 frames, you get 16.7 milliseconds.
             What that means is that, any JavaScript you do has to complete in under 16.7 milliseconds if
             you want to stay at 60 FPS.
+          </aside>
+        </section>
 
+        <section>
+          <h3>Factor in browser overhead...</h3>
+          <img class="no-border"  src="img/paul_lewis.png" alt="Paul Lewis, 10ms"/>
+          <aside class="notes">
             If you factor in browser overhead, according to Paul Lewis on the Chrome team, this is actually
             even smaller. 10ms for all your JavaScript to execute! That's tiny! that's punishingly small!
+          </aside>
+        </section>
 
+        <section>
+          <img src="img/jeff_atwood.png" alt="Jeff Atwood, state of JS performance is poor"/>
+          <aside class="notes">
             And if you think it's bad on desktop, try mobile, where we have slower CPUs. It led Jeff Atwood
             to write this post about how Android phones just aren't fast enough to run Discourse, which is
             an Ember app. Newer iPhones are barely fast enough, but Android phones just aren't there.
@@ -200,24 +211,6 @@
             milk performance out of a weak CPU.
           </aside>
         </section>
-
-        <!-- TLDR
-        <section>
-          <h3>Factor in browser overhead...</h3>
-          <img class="no-border"  src="img/paul_lewis.png" alt="Paul Lewis, 10ms"/>
-          <aside class="notes">
-
-          </aside>
-        </section>
-        -->
-
-        <!-- TLDR
-        <section>
-          <img src="img/jeff_atwood.png" alt="Jeff Atwood, state of JS performance is poor"/>
-          <aside class="notes">
-          </aside>
-        </section>
-        -->
 
         <section>
           <div style="display:flex;flex-direction:row;">
@@ -235,6 +228,34 @@
           </div>
           <aside class="notes">
             So what are we supposed to do? Well, it turns out the web has a solution to this, and it's called web workers!
+          </aside>
+        </section>
+
+        <section>
+          <div style="display:flex;flex-direction:row;">
+            <div style="flex-grow: 1; flex-shrink: 1">
+          <pre><code class="javascript">// index.js
+
+var worker = new Worker('worker.js');
+worker.postMessage('ping');
+worker.onmessage = function (e) {
+  console.log(e.data); // 'pong'
+};</code></pre>
+            </div>
+
+            <div style="flex-grow: 1; flex-shrink: 1;">
+          <pre><code class="javascript">// worker.js
+
+self.onmessage = function (e) {
+  console.log(e.data); // 'ping'
+  self.postMessage('pong');
+};</code></pre>
+</div>
+          </div>
+          <aside class="notes">
+            I'm not going to go too deep into this code, but a web worker is basically a background thread that you can spawn
+            whenever you want to do a bit of JavaScript work. Anything that runs inside the worker runs on another thread (another
+            process in fact), so it cannot possibly block the DOM.
           </aside>
         </section>
 
@@ -295,34 +316,6 @@
           </aside>
         </section>
 
-
-        <section>
-          <div style="display:flex;flex-direction:row;">
-          <div style="flex-grow: 1; flex-shrink: 1">
-          <pre><code class="javascript">// index.js
-
-var worker = new Worker('worker.js');
-worker.postMessage('ping');
-worker.onmessage = function (e) {
-  console.log(e.data); // 'pong'
-};</code></pre>
-          </div>
-
-          <div style="flex-grow: 1; flex-shrink: 1;">
-          <pre><code class="javascript">// worker.js
-
-self.onmessage = function (e) {
-  console.log(e.data); // 'ping'
-  self.postMessage('pong');
-};</code></pre>
-          </div>
-          </div>
-          <aside class="notes">
-            I'm not going to go too deep into this code, but a web worker is basically a background thread that you can spawn
-            whenever you want to do a bit of JavaScript work. Anything that runs inside the worker runs on another thread (another
-            process in fact), so it cannot possibly block the DOM.
-          </aside>
-        </section>
 
         <!-- TLDR
 
